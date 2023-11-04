@@ -15,7 +15,8 @@ const Student = {
     db.findOne({ _id: id }, callback);
   },
   update: (id, student, callback) => {
-    db.update({ _id: id }, { $set: student }, {}, callback);
+    console.log(student)
+    db.update({ _id: id }, { $set:{name: student.updatedName, age: student.updatedAge, email: student.updatedEmail, gender: student.updatedGender} }, {}, callback);
   },
   delete: (id, callback) => {
     db.remove({ _id: id }, {}, callback);

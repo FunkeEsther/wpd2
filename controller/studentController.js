@@ -1,16 +1,23 @@
 
 const Student = require('../models/student'); // Import the Student model
 
-// Controller for creating a new student
 const createStudent = (req, res) => {
   const newStudent = req.body;
   Student.create(newStudent, (err, student) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
-    res.status(201).json(student);
+    // Get the updated list of students after creating the new one
+    Student.getAll((err, students) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+      // Send the updated list of students as a response
+      res.status(201).redirect('/');
+    });
   });
 };
+
 
 // Controller for retrieving all students
 const getAllStudents = (req, res) => {
@@ -38,29 +45,42 @@ const getStudentById = (req, res) => {
 // Controller for updating a student by ID
 const updateStudent = (req, res) => {
   const updatedStudent = req.body;
-  Student.update(req.params.id, updatedStudent, (err, numReplaced) => {
+  console.log(req.body)
+  Student.update(req.body.updateStudentId, updatedStudent, (err, numReplaced) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
     if (numReplaced === 0) {
       return res.status(404).json({ error: 'Student not found' });
     }
-    res.status(200).json({ message: 'Student updated successfully' });
+    //res.status(200).json({ message: 'Student updated successfully' });
+    res.redirect('/');
   });
 };
 
 // Controller for deleting a student by ID
 const deleteStudent = (req, res) => {
-  Student.delete(req.params.id, (err, numRemoved) => {
+  
+  Student.delete(req.body.deleteStudentId, (err, numRemoved) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
     if (numRemoved === 0) {
       return res.status(404).json({ error: 'Student not found' });
     }
-    res.status(204).end();
+   // res.status(204).end();
+    res.redirect('/');
   });
 };
+
+const landing_page = (req, res) =>{
+  Student.getAll((err, students) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+    res.render('index', {students});
+  });
+}
 
 module.exports = {
   createStudent,
@@ -68,4 +88,6 @@ module.exports = {
   getStudentById,
   updateStudent,
   deleteStudent,
+  landing_page
 };
+
